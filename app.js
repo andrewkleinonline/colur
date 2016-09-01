@@ -1,10 +1,19 @@
 console.log("App.js is running");
 
-$('button').on('click', function(){
-  // we want to fire our XHR request
-  var baseUrl = 'http://www.thecolorapi.com/';
-  var colorHex = $('input#color_input').val();
-//scheme?hex=0E70D1&mode=analogic&count=5
+var baseUrl = 'http://www.thecolorapi.com/';
+
+
+function applyBackgroundColor(array, color){
+  for (var i = 0; i < array.length; i++) {
+    array[i].style.backgroundColor = `#${color}`;
+  }}
+
+function applyColor(array, color){
+  for (var i = 0; i < array.length; i++) {
+    array[i].style.color = `#${color}`;
+  }}
+
+function getAndSetColors(colorHex) {
   $.ajax({
     url: baseUrl + 'scheme?hex=' + colorHex + '&mode=quad&count=4',
     method: 'GET',
@@ -20,9 +29,14 @@ $('button').on('click', function(){
       var color3Hex = response.colors[2].hex.clean;
       var color3Name = response.colors[2].name.value;
 
-      var color4Hex = response.colors[3].hex.clean;
-      var color4Name = response.colors[3].name.value;
-      //debugger;
+      applyBackgroundColor($('.color-original'), colorHex);
+      applyColor($('.color-1'), color1Hex);
+      applyBackgroundColor($('div.color-1'), color1Hex);
+      applyColor($('.color-2'), color2Hex);
+      applyColor($('.color-3'), color3Hex);
+
+      $('#swatches')[0].style.display = 'inline-block';
+
       $('#div-0')[0].style.backgroundColor = `#${colorHex}`;
       $('#div-0')[0].innerHTML = originalName;
 
@@ -34,25 +48,28 @@ $('button').on('click', function(){
 
       $('#div-3')[0].style.backgroundColor = `#${color3Hex}`;
       $('#div-3')[0].innerHTML = color3Name;
-
-      // $('#div-4')[0].style.backgroundColor = `#${color4Hex}`;
-      // $('#div-4')[0].innerHTML = color4Name;
-
     }
   })
-  // $.ajax({
-  //   url: baseUrl + pokemonName,
-  //   method: 'GET',
-  //   success: function(response, status){
-  //     debugger;
-  //     var imageSrc = response.sprites.front_default;
-  //     var name = response.name;
-  //     var type = response.types[0].type.name;
-  //     $('img#pokemonFrontDefault').attr('src', imageSrc);
-  //     $('#pokemonName').text(name);
-  //     // add the type of pokemon
-  //     $('#pokemonType').text(type);
-  //     // clear out search bar
-  //   }
-  // });
+}
+
+
+$('#specific-button').on('click', function(){
+  var colorHex = $('input#color_input').val();
+
+  getAndSetColors(colorHex);
+});
+
+$('#random-button').on('click', function(){
+  // var colorHex = $('input#color_input').val();
+
+  var randomColorArray = []
+
+  for (var i = 0; i < 3; i++) {
+    randomColorArray.push(Math.floor(Math.random()*255))
+    randomColorArray[i] = randomColorArray[i].toString(16)
+  }
+
+  var colorHex = randomColorArray.join("")
+
+  getAndSetColors(colorHex);
 });
